@@ -1,6 +1,7 @@
 #importovanie kniznic
 import pygame
 from pygame.locals import *
+import random   
 
 #zapinanie pygame
 pygame.init()
@@ -21,6 +22,9 @@ ground_scroll = 0
 scroll_speed = 4
 flying = False
 game_over = False
+pipe_gap = 150 
+pipe_frequency = 1500 #milisekundy
+last_pipe=pygame.time.get_ticks() - pipe_frequency  
 
 #nacitavanie obrazkov , musite mat img subor v tom obrazky 
 bg = pygame.image.load("img/etika.webp")
@@ -93,14 +97,33 @@ class Bird(pygame.sprite.Sprite):
 
 
 
+#definovanie pipy
+class Pipe(pygame.sprite.Sprite):
+    def __init__(self, x, y, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('img/etika.png')
+        self.rect = self.image.get_rect()
+        
+        # pozicia 1 je z vrchu, -1  z dola
+        if position == 1:
+            self.image = pygame.transform.flip(self.image, False, True)
+            self.rect.bottomleft = [x, y - int(pipe_gap / 2)]
+        if position == -1:
+            self.rect.topleft = [x, y + int(pipe_gap / 2)]
+        
+    def update(self):
+        self.rect.x -= scroll_speed
+        if self.rect.right < 0:
+            self.kill()
+        
 
 
 
 
 
-
-#nastavenie kde bude flappy zacinat
+#nastavenie kde bude flappy zacinat a kde budu pipy
 bird_group = pygame.sprite.Group()
+pipe_group = pygame.sprite.Group()
 flappy = Bird(100, int(screen_height / 2))
 bird_group.add(flappy)
 
@@ -121,23 +144,38 @@ while run:
 
     bird_group.draw(screen)
     bird_group.update()
-
+    pipe_group.draw(screen)
+    
     #nakresli ground
     screen.blit(ground_img, (ground_scroll , 768))
 
+    #pozor na kolizie
+    if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top < 0:
+        game_over = True
+
     #ked fľepi hitne ground
-    if flappy.rect.bottom > 768:
+    if flappy.rect.bottom >= 768:
         game_over = True
         flying = False
 
-    if game_over == False:
+    if game_over == False and flying == True:
 
-    #scrollovanie ground
+        #vygeneruj nove pipy
+        time_now = pygame.time.get_ticks()
+        if time_now - last_pipe > pipe_frequency:
+            pipe_height = random.randint(-100,100)
+            btm_pipe=Pipe(screen_width,int(screen_height / 2) + pipe_height,-1)
+            top_pipe=Pipe(screen_width,int(screen_height / 2) + pipe_height, 1)
+            pipe_group.add(btm_pipe)
+            pipe_group.add(top_pipe)
+            last_pipe = time_now
+
+        #scrollovanie ground
         ground_scroll -= scroll_speed
         if abs(ground_scroll) > 35:
             ground_scroll = 0
     
-
+        pipe_group.update()
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
