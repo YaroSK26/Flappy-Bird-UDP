@@ -17,6 +17,12 @@ screen_height = 836
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Flappy Bird")
 
+#definovanie fontu
+font = pygame.font.SysFont("comic sans MS", 60)
+
+#definovanie farby
+white = (255, 255, 255)
+
 #definovanie somarin
 ground_scroll = 0
 scroll_speed = 4
@@ -25,15 +31,32 @@ game_over = False
 pipe_gap = 150 
 pipe_frequency = 1500 #milisekundy
 last_pipe=pygame.time.get_ticks() - pipe_frequency  
+#tu je brano
+score = 0
+pass_pipe = False
+
 
 #nacitavanie obrazkov , musite mat img subor v tom obrazky 
 bg = pygame.image.load("img/etika.webp")
 ground_img = pygame.image.load("img/ground.png")
+button_img = pygame.image.load("img/chleba.png")
+
+
+def draw_text(text, font, text_col, x, y):
+    img = font.render(text, True, text_col)
+    screen.blit(img, (x, y))
+
 
 #zapinanie cez terminal - prave tlacitko - run python file in terminal 
 
 
 
+def reset_game():
+    pipe_group.empty()
+    flappy.rect.x = 100
+    flappy.rect.y = int(screen_height / 2)
+    score = 0
+    return score
 
 
 #sprite class animacia postavy , images 
@@ -117,9 +140,30 @@ class Pipe(pygame.sprite.Sprite):
             self.kill()
         
 
+#chleba
+class Button():
+    def __init__(self, x, y, image):
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+    
+    def draw(self):
+        
+        action = False
+
+        #pozicia kurozra
+        pos = pygame.mouse.get_pos()
+
+        #ci je mys nad chlebom
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1:
+                action = True
 
 
+        #chleba
+        screen.blit(self.image, (self.rect.x, self.rect.y))
 
+        return action
 
 #nastavenie kde bude flappy zacinat a kde budu pipy
 bird_group = pygame.sprite.Group()
@@ -127,7 +171,8 @@ pipe_group = pygame.sprite.Group()
 flappy = Bird(100, int(screen_height / 2))
 bird_group.add(flappy)
 
-
+#chleba instancia
+button = Button(screen_width // 2.3, screen_height // 2.3, button_img)
 
 
 
@@ -148,7 +193,20 @@ while run:
     
     #nakresli ground
     screen.blit(ground_img, (ground_scroll , 768))
+    
+    #ake je skore???(akoze sa pitone kukne ze jake je)
+    if len(pipe_group) > 0:
+        if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left\
+            and bird_group.sprites()[0].rect.right < pipe_group.sprites()[0].rect.right\
+            and pass_pipe == False:
+            pass_pipe = True
+        if pass_pipe == True:
+            if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.right:
+                score += 1
+                pass_pipe = False
 
+    draw_text(str(score), font, white, int(screen_width/2.1), 20)              
+    
     #pozor na kolizie
     if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top < 0:
         game_over = True
@@ -177,6 +235,13 @@ while run:
     
         pipe_group.update()
     
+    #koniec hry? reset?
+    if game_over == True:
+        if button.draw() == True:
+            game_over = False
+            score = reset_game()
+
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
