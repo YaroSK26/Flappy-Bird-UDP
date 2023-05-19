@@ -40,6 +40,8 @@ pass_pipe = False
 bg = pygame.image.load("img/etika.webp")
 ground_img = pygame.image.load("img/ground.png")
 button_img = pygame.image.load("img/chleba.png")
+menu_img = pygame.image.load("img/menu.png")
+
 
 
 def draw_text(text, font, text_col, x, y):
@@ -172,14 +174,15 @@ flappy = Bird(100, int(screen_height / 2))
 bird_group.add(flappy)
 
 #chleba instancia
-button = Button(screen_width // 2.3, screen_height // 2.3, button_img)
-
+button = Button(screen_width // 2.5, screen_height // 2.5, button_img)
+start_button = Button(screen_width // 2.5, screen_height // 2, menu_img)
 
 
 
 
 run = True
 while run:
+
 
     clock.tick(fps)
     
@@ -237,6 +240,7 @@ while run:
     
     #koniec hry? reset?
     if game_over == True:
+        action = start_button.draw()
         if button.draw() == True:
             game_over = False
             score = reset_game()
@@ -247,6 +251,11 @@ while run:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN and flying == False and game_over == False:
             flying = True
+
+        
+
+
+
 
     pygame.display.update()
 #cau pygame
