@@ -1,47 +1,46 @@
-#importovanie kniznic
+#importovanie knzinic
 import pygame
 from pygame.locals import *
-import random   
+import random
 
-#zapinanie pygame
+#pajgejm
 pygame.init()
 
-#nastavovanie fps
+#fps
 clock = pygame.time.Clock()
-fps = 60
+fps = 300
 
-#nastavovanie sirky a dlzky ptm nastavenie na screen + nazov 
+#rozmery obrazovky
 screen_width = 864
 screen_height = 836
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Flappy Bird")
 
-#definovanie fontu
+#definovanie fonti
 font = pygame.font.SysFont("comic sans MS", 60)
+menu_font = pygame.font.SysFont('gabriola', 140)
 
-#definovanie farby
+#definovanie farieb
 white = (255, 255, 255)
 
-#definovanie somarin
+#defiovanie premennych
 ground_scroll = 0
 scroll_speed = 4
 flying = False
 game_over = False
-pipe_gap = 150 
-pipe_frequency = 1500 #milisekundy
-last_pipe=pygame.time.get_ticks() - pipe_frequency  
-#tu je brano
+pipe_gap = 150
+pipe_frequency = 1500  # milliseconds
+last_pipe = pygame.time.get_ticks() - pipe_frequency
 score = 0
 pass_pipe = False
 
-
-#nacitavanie obrazkov , musite mat img subor v tom obrazky 
+#nacitavanie obrazkov
 bg = pygame.image.load("img/etika.webp")
 ground_img = pygame.image.load("img/ground.png")
-button_img = pygame.image.load("img/chleba.png")
+reset_button_img = pygame.image.load("img/chleba.png")
 menu_img = pygame.image.load("img/menu.png")
-
+endless_button = pygame.image.load('img/endless1.png')
 
 
 def draw_text(text, font, text_col, x, y):
@@ -49,9 +48,37 @@ def draw_text(text, font, text_col, x, y):
     screen.blit(img, (x, y))
 
 
-#zapinanie cez terminal - prave tlacitko - run python file in terminal 
+def main_menu():
+    pygame.display.set_caption('Menu')
 
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:  # lave tlacitko mysi
+                    # kuka ci mys je na tlacitku
+                    button_x = screen_width // 2 - endless_button.get_width() // 2
+                    button_y = screen_height // 2 - endless_button.get_height() // 2
+                    button_rect = endless_button.get_rect(topleft=(button_x, button_y))
 
+                    if button_rect.collidepoint(event.pos):
+                        game_over = False
+                        #zacni hru
+                        return
+
+        screen.blit(bg, (0, 0))
+
+        MENU_TEXT = menu_font.render('Flappy Bird', True, '#111111')
+        screen.blit(MENU_TEXT, (screen_width // 2 - MENU_TEXT.get_width() // 2, screen_height // 6 - MENU_TEXT.get_height() // 2))
+        endless_button_x = screen_width // 2 - endless_button.get_width() // 2
+        endless_button_y = screen_height // 2 - endless_button.get_height() // 2
+        screen.blit(endless_button, (endless_button_x, endless_button_y))
+
+        pygame.display.update()
+        clock.tick(fps)
+main_menu()
 
 def reset_game():
     pipe_group.empty()
@@ -86,7 +113,6 @@ class Bird(pygame.sprite.Sprite):
             self.vel += 0.5
             if self.vel >8:
                 self.vel = 8
-            print(self.vel)
             if self.rect.bottom < 768:
                 self.rect.y += int(self.vel)
 
@@ -97,7 +123,7 @@ class Bird(pygame.sprite.Sprite):
             if pygame.mouse.get_pressed()[0]==1 and self.clicked == False:
                 self.clicked = True
                 self.vel = -10
-            #nastavovanie aby pri drzani mysi fľepi neskakal
+            #nastavovanie aby pri drzani mysi fÄ¾epi neskakal
             if pygame.mouse.get_pressed()[0]==0:
                 self.clicked = False
 
@@ -174,30 +200,57 @@ flappy = Bird(100, int(screen_height / 2))
 bird_group.add(flappy)
 
 #chleba instancia
-button = Button(screen_width // 2.5, screen_height // 2.5, button_img)
-start_button = Button(screen_width // 2.5, screen_height // 2, menu_img)
+button = Button(screen_width // 2.5, screen_height // 2.5, reset_button_img)
+menu_button = Button(screen_width // 2.5, screen_height // 2, menu_img)
 
+def start_game():
+    global flying, game_over, score
+    flying = True
+    game_over = False
+    score = reset_game()
 
+def main_menu():
+    pygame.display.set_caption('Menu')
 
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:  # Left mouse button
+                    # Check if the mouse click is within the button bounds
+                    button_x = screen_width // 2 - endless_button.get_width() // 2
+                    button_y = screen_height // 2 - endless_button.get_height() // 2
+                    button_rect = endless_button.get_rect(topleft=(button_x, button_y))
+
+                    if button_rect.collidepoint(event.pos):
+                        start_game()
+                        return
+        screen.blit(bg, (0, 0))
+        MENU_TEXT = menu_font.render('Flappy Bird', True, '#111111')
+        screen.blit(MENU_TEXT, (screen_width // 2 - MENU_TEXT.get_width() // 2, screen_height // 6 - MENU_TEXT.get_height() // 2))
+        endless_button_x = screen_width // 2 - endless_button.get_width() // 2
+        endless_button_y = screen_height // 2 - endless_button.get_height() // 2
+        screen.blit(endless_button, (endless_button_x, endless_button_y))
+        pygame.display.update()
+        clock.tick(fps)
+
+def reset_game():
+    pipe_group.empty()
+    flappy.rect.x = 100
+    flappy.rect.y = int(screen_height / 2)
+    score = 0
+    return score
 
 run = True
 while run:
-
-
     clock.tick(fps)
-    
-    #nakresli bg
     screen.blit(bg, (0,0))
-
-
     bird_group.draw(screen)
     bird_group.update()
     pipe_group.draw(screen)
-    
-    #nakresli ground
     screen.blit(ground_img, (ground_scroll , 768))
-    
-    #ake je skore???(akoze sa pitone kukne ze jake je)
     if len(pipe_group) > 0:
         if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left\
             and bird_group.sprites()[0].rect.right < pipe_group.sprites()[0].rect.right\
@@ -209,19 +262,13 @@ while run:
                 pass_pipe = False
 
     draw_text(str(score), font, white, int(screen_width/2.1), 20)              
-    
-    #pozor na kolizie
     if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top < 0:
         game_over = True
-
-    #ked fľepi hitne ground
     if flappy.rect.bottom >= 768:
         game_over = True
         flying = False
 
     if game_over == False and flying == True:
-
-        #vygeneruj nove pipy
         time_now = pygame.time.get_ticks()
         if time_now - last_pipe > pipe_frequency:
             pipe_height = random.randint(-100,100)
@@ -230,33 +277,19 @@ while run:
             pipe_group.add(btm_pipe)
             pipe_group.add(top_pipe)
             last_pipe = time_now
-
-        #scrollovanie ground
         ground_scroll -= scroll_speed
         if abs(ground_scroll) > 35:
             ground_scroll = 0
-    
         pipe_group.update()
-    
-    #koniec hry? reset?
     if game_over == True:
-        action = start_button.draw()
+        if menu_button.draw() == True:
+            main_menu()
         if button.draw() == True:
-            game_over = False
-            score = reset_game()
-
-
+            start_game()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN and flying == False and game_over == False:
             flying = True
-
-        
-
-
-
-
     pygame.display.update()
-#cau pygame
 pygame.quit()
