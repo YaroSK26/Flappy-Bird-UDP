@@ -12,7 +12,7 @@ fps = 300
 
 #rozmery obrazovky
 screen_width = 864
-screen_height = 836
+screen_height = 800
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Flappy Bird")
@@ -41,6 +41,7 @@ ground_img = pygame.image.load("img/ground.png")
 reset_button_img = pygame.image.load("img/chleba.png")
 menu_img = pygame.image.load("img/menu.png")
 endless_button = pygame.image.load('img/endless1.png')
+quit_button = pygame.image.load("img/Quit1.png")
 
 
 def draw_text(text, font, text_col, x, y):
@@ -67,6 +68,12 @@ def main_menu():
                         game_over = False
                         #zacni hru
                         return
+                    
+                    mouse_x, mouse_y = pygame.mouse.get_pos()
+                if quit_button_x < mouse_x < quit_button_x + quit_button.get_width() and \
+                   quit_button_y < mouse_y < quit_button_y + quit_button.get_height():
+                    pygame.quit()
+                    exit()
 
         screen.blit(bg, (0, 0))
 
@@ -75,6 +82,11 @@ def main_menu():
         endless_button_x = screen_width // 2 - endless_button.get_width() // 2
         endless_button_y = screen_height // 2 - endless_button.get_height() // 2
         screen.blit(endless_button, (endless_button_x, endless_button_y))
+
+        quit_button_x = screen_width // 2 - quit_button.get_width() // 2
+        quit_button_y = screen_height // 1.65 - quit_button.get_height() // 2
+        screen.blit(quit_button, (quit_button_x, quit_button_y))
+
 
         pygame.display.update()
         clock.tick(fps)
@@ -227,12 +239,25 @@ def main_menu():
                     if button_rect.collidepoint(event.pos):
                         start_game()
                         return
+                    
+
+                    mouse_x, mouse_y = pygame.mouse.get_pos()
+                if quit_button_x < mouse_x < quit_button_x + quit_button.get_width() and \
+                   quit_button_y < mouse_y < quit_button_y + quit_button.get_height():
+                    pygame.quit()
+                    exit()
         screen.blit(bg, (0, 0))
         MENU_TEXT = menu_font.render('Flappy Bird', True, '#111111')
         screen.blit(MENU_TEXT, (screen_width // 2 - MENU_TEXT.get_width() // 2, screen_height // 6 - MENU_TEXT.get_height() // 2))
         endless_button_x = screen_width // 2 - endless_button.get_width() // 2
         endless_button_y = screen_height // 2 - endless_button.get_height() // 2
         screen.blit(endless_button, (endless_button_x, endless_button_y))
+
+        
+        quit_button_x = screen_width // 2 - quit_button.get_width() // 2
+        quit_button_y = screen_height // 1.65 - quit_button.get_height() // 2
+        screen.blit(quit_button, (quit_button_x, quit_button_y))
+
         pygame.display.update()
         clock.tick(fps)
 
