@@ -42,6 +42,11 @@ reset_button_img = pygame.image.load("img/chleba.png")
 menu_img = pygame.image.load("img/menu.png")
 endless_button = pygame.image.load('img/endless1.png')
 quit_button = pygame.image.load("img/Quit1.png")
+levels_button = pygame.image.load("img/level1.png")
+neger = pygame.image.load("img/neger.jpg")
+options_button = pygame.image.load('img/options.png')
+
+
 
 
 def draw_text(text, font, text_col, x, y):
@@ -84,8 +89,29 @@ def main_menu():
         screen.blit(endless_button, (endless_button_x, endless_button_y))
 
         quit_button_x = screen_width // 2 - quit_button.get_width() // 2
-        quit_button_y = screen_height // 1.65 - quit_button.get_height() // 2
+        quit_button_y = screen_height // 1.24 - quit_button.get_height() // 2
         screen.blit(quit_button, (quit_button_x, quit_button_y))
+
+        levels_button_x = screen_width // 2 - levels_button.get_width() // 2
+        levels_button_y = screen_height // 1.65 - levels_button.get_height() // 2
+        screen.blit(levels_button, (levels_button_x, levels_button_y))
+
+        options_button_x = screen_width // 2 - options_button.get_width() // 2
+        options_button_y = screen_height // 2 - options_button.get_height() // 2 + endless_button.get_height() + 100
+        screen.blit(options_button, (options_button_x, options_button_y))
+
+
+        
+        
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        if levels_button_x < mouse_x < levels_button_x + levels_button.get_width() and \
+        levels_button_y < mouse_y < levels_button_y + levels_button.get_height():
+            neger_x = screen_width // 2 - neger.get_width() // 2
+            neger_y = screen_height // 2 - neger.get_height() // 2
+            screen.blit(neger, (neger_x, neger_y))
+            pygame.display.update()
+
+
 
 
         pygame.display.update()
@@ -230,36 +256,60 @@ def main_menu():
                 pygame.quit()
                 exit()
             if event.type == MOUSEBUTTONDOWN:
-                if event.button == 1:  # Left mouse button
-                    # Check if the mouse click is within the button bounds
+                if event.button == 1:  # lave tlacitko mysi
+                    # kuka ci mys je na tlacitku
                     button_x = screen_width // 2 - endless_button.get_width() // 2
                     button_y = screen_height // 2 - endless_button.get_height() // 2
                     button_rect = endless_button.get_rect(topleft=(button_x, button_y))
 
                     if button_rect.collidepoint(event.pos):
-                        start_game()
+                        game_over = False
+                        #zacni hru
                         return
                     
-
                     mouse_x, mouse_y = pygame.mouse.get_pos()
                 if quit_button_x < mouse_x < quit_button_x + quit_button.get_width() and \
                    quit_button_y < mouse_y < quit_button_y + quit_button.get_height():
                     pygame.quit()
                     exit()
+
         screen.blit(bg, (0, 0))
+
         MENU_TEXT = menu_font.render('Flappy Bird', True, '#111111')
         screen.blit(MENU_TEXT, (screen_width // 2 - MENU_TEXT.get_width() // 2, screen_height // 6 - MENU_TEXT.get_height() // 2))
         endless_button_x = screen_width // 2 - endless_button.get_width() // 2
         endless_button_y = screen_height // 2 - endless_button.get_height() // 2
         screen.blit(endless_button, (endless_button_x, endless_button_y))
 
-        
         quit_button_x = screen_width // 2 - quit_button.get_width() // 2
-        quit_button_y = screen_height // 1.65 - quit_button.get_height() // 2
+        quit_button_y = screen_height // 1.24 - quit_button.get_height() // 2
         screen.blit(quit_button, (quit_button_x, quit_button_y))
+
+        levels_button_x = screen_width // 2 - levels_button.get_width() // 2
+        levels_button_y = screen_height // 1.65 - levels_button.get_height() // 2
+        screen.blit(levels_button, (levels_button_x, levels_button_y))
+
+        options_button_x = screen_width // 2 - options_button.get_width() // 2
+        options_button_y = screen_height // 2 - options_button.get_height() // 2 + endless_button.get_height() + 100
+        screen.blit(options_button, (options_button_x, options_button_y))
+
+
+        
+        
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        if levels_button_x < mouse_x < levels_button_x + levels_button.get_width() and \
+        levels_button_y < mouse_y < levels_button_y + levels_button.get_height():
+            neger_x = screen_width // 2 - neger.get_width() // 2
+            neger_y = screen_height // 2 - neger.get_height() // 2
+            screen.blit(neger, (neger_x, neger_y))
+            pygame.display.update()
+
+
+
 
         pygame.display.update()
         clock.tick(fps)
+
 
 def reset_game():
     pipe_group.empty()
