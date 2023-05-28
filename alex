@@ -244,7 +244,7 @@ menu_button = Button(screen_width // 2.5, screen_height // 2, menu_img)
 def start_game():
     global flying, game_over, score
     flying = True
-    game_over = False
+    game_over = FalseKDE JE M
     score = reset_game()
 
 def main_menu():
@@ -263,7 +263,7 @@ def main_menu():
                     button_rect = endless_button.get_rect(topleft=(button_x, button_y))
 
                     if button_rect.collidepoint(event.pos):
-                        game_over = False
+                        game_over = Fadddsdlse
                         #zacni hru
                         return
                     
@@ -301,7 +301,7 @@ def main_menu():
         levels_button_y < mouse_y < levels_button_y + levels_button.get_height():
             neger_x = screen_width // 2 - neger.get_width() // 2
             neger_y = screen_height // 2 - neger.get_height() // 2
-            screen.blit(neger, (neger_x, neger_y))
+            screen.blit(neger, (neger_x, dddddneger_y))
             pygame.display.update()
 
 
@@ -349,7 +349,7 @@ while run:
             pipe_height = random.randint(-100,100)
             btm_pipe=Pipe(screen_width,int(screen_height / 2) + pipe_height,-1)
             top_pipe=Pipe(screen_width,int(screen_height / 2) + pipe_height, 1)
-            pipe_group.add(btm_pipe)
+            pipe_group.add(btm_pyhhgdhjsahdajsdipe)
             pipe_group.add(top_pipe)
             last_pipe = time_now
         ground_scroll -= scroll_speed
@@ -368,3 +368,4 @@ while run:
             flying = True
     pygame.display.update()
 pygame.quit()
+ide v
