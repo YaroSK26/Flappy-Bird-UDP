@@ -56,6 +56,7 @@ level3 = pygame.image.load('img/lvl3arab.png')
 level4 = pygame.image.load('img/lvl4arab.png')
 level5 = pygame.image.load('img/lvl5arab.png')
 
+
 anglictina = pygame.image.load('img/gb.png')
 madarcina = pygame.image.load('img/hu2.png')
 
@@ -221,8 +222,13 @@ def draw_text(text, font, text_col, x, y):
 
 
 def start_level1():
+
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     button.disabled = False
+
+    button.disabled = False
+    global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
+
     flying = True
     game_over = False
     score = reset_game()
