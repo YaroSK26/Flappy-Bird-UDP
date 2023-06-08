@@ -54,7 +54,9 @@ reset_hu = pygame.image.load('img/reset_hu.png')
 endless_hu = pygame.image.load('img/endless_hu.png')
 levels_hu = pygame.image.load('img/levels_hu.png')
 madarcina = pygame.image.load('img/hu2.png')
-
+logoeng = pygame.image.load('img/logoeng.png')
+logohun = pygame.image.load('img/logohun.png')
+game_over_eng = pygame.image.load('img/Game_Over_ENG.png')
 #sprite class animacia postavy , images 
 class Bird(pygame.sprite.Sprite):
     def __init__(self, x,y):
@@ -207,8 +209,7 @@ def hra_po_madarsky():
 
         screen.blit(bg, (0, 0))
 
-        MENU_TEXT = menu_font.render('Madar Csakpodo', True, '#111111')
-        screen.blit(MENU_TEXT, (screen_width // 2 - MENU_TEXT.get_width() // 2, screen_height // 6 - MENU_TEXT.get_height() // 2))
+        screen.blit(logohun, (screen_width // 2 - logohun.get_width() // 2, screen_height // 5 - logohun.get_height() // 2))
         endless_hu_x = screen_width // 2 - endless_hu.get_width() // 2
         endless_hu_y = screen_height // 2 - endless_hu.get_height() // 2
         screen.blit(endless_hu, (endless_hu_x, endless_hu_y))
@@ -284,8 +285,7 @@ def hra_po_anglicky():
 
         screen.blit(bg, (0, 0))
 
-        MENU_TEXT = menu_font.render('Flappy Bird', True, '#111111')
-        screen.blit(MENU_TEXT, (screen_width // 2 - MENU_TEXT.get_width() // 2, screen_height // 6 - MENU_TEXT.get_height() // 2))
+        screen.blit(logoeng, (screen_width // 2 - logoeng.get_width() // 2, screen_height // 5 - logoeng.get_height() // 2))
         endless_button_x = screen_width // 2 - endless_button.get_width() // 2
         endless_button_y = screen_height // 2 - endless_button.get_height() // 2
         screen.blit(endless_button, (endless_button_x, endless_button_y))
@@ -311,8 +311,7 @@ def hra_po_anglicky():
 
         screen.blit(bg, (0, 0))
 
-        MENU_TEXT = menu_font.render('Flappy Bird', True, '#111111')
-        screen.blit(MENU_TEXT, (screen_width // 2 - MENU_TEXT.get_width() // 2, screen_height // 6 - MENU_TEXT.get_height() // 2))
+        screen.blit(logoeng, (screen_width // 2 - logoeng.get_width() // 2, screen_height // 5 - logoeng.get_height() // 2))
         endless_button_x = screen_width // 2 - endless_button.get_width() // 2
         endless_button_y = screen_height // 2 - endless_button.get_height() // 2
         screen.blit(endless_button, (endless_button_x, endless_button_y))
@@ -354,7 +353,6 @@ class Pipe(pygame.sprite.Sprite):
         self.rect.x -= scroll_speed
         if self.rect.right < 0:
             self.kill()
-        
 
 #chleba
 
@@ -382,7 +380,7 @@ def reset_game():
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))
-    button.disabled = False
+    
     
 
 
@@ -391,7 +389,6 @@ def draw_text(text, font, text_col, x, y):
 
 
 def start_level1():
-    button.disabled = False
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     flying = True
     game_over = False
@@ -399,6 +396,23 @@ def start_level1():
     pipe_frequency = 2400
     pipe_gap = 170
 
+    class Pipe(pygame.sprite.Sprite):
+       def __init__(self, x, y, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('img/etika.png')
+        self.rect = self.image.get_rect()
+        
+        # pozicia 1 je z vrchu, -1  z dola
+        if position == 1:
+            self.image = pygame.transform.flip(self.image, False, True)
+            self.rect.bottomleft = [x, y - int(pipe_gap / 2)]
+        if position == -1:
+            self.rect.topleft = [x, y + int(pipe_gap / 2)]
+        
+       def update(self):
+        self.rect.x -= scroll_speed
+        if self.rect.right < 0:
+            self.kill()
 
     screen.fill((0, 0, 0))
     napisfont = pygame.font.SysFont('mvboli', 140)
@@ -449,7 +463,6 @@ def start_level1():
 
         if game_over == True:
             if menu_button.draw() == True:
-                button.disabled = True
                 main_menu()
             if button.draw() == True:
                 start_level1()
@@ -464,13 +477,31 @@ def start_level1():
         pygame.display.update()
 
 def start_level2():
-    button.disabled = False
+    ground_img = pygame.image.load("img/sjlground.png")
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     flying = True
     game_over = False
     score = reset_game()
     pipe_frequency = 1700
-    pipe_gap = 100
+    pipe_gap = 140
+    class Pipe(pygame.sprite.Sprite):
+       def __init__(self, x, y, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('img/slovencina.png')
+        self.rect = self.image.get_rect()
+        
+        # pozicia 1 je z vrchu, -1  z dola
+        if position == 1:
+            self.image = pygame.transform.flip(self.image, False, True)
+            self.rect.bottomleft = [x, y - int(pipe_gap / 2)]
+        if position == -1:
+            self.rect.topleft = [x, y + int(pipe_gap / 2)]
+        
+       def update(self):
+        self.rect.x -= scroll_speed
+        if self.rect.right < 0:
+            self.kill()
+
 
     screen.fill((0, 0, 0))  
     napisfont = pygame.font.SysFont('mvboli', 140)
@@ -522,7 +553,6 @@ def start_level2():
 
         if game_over == True:
             if menu_button.draw() == True:
-                button.disabled = True
                 main_menu()
             if button.draw() == True:
                 start_level2()
@@ -537,13 +567,30 @@ def start_level2():
         pygame.display.update()
 
 def start_level3():
-    button.disabled = False
+    ground_img = pygame.image.load("img/matground.png")
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     flying = True
     game_over = False
     score = reset_game()
     pipe_frequency = 1400
-    pipe_gap = 80
+    pipe_gap = 120
+    class Pipe(pygame.sprite.Sprite):
+       def __init__(self, x, y, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('img/matika.png')
+        self.rect = self.image.get_rect()
+        
+        # pozicia 1 je z vrchu, -1  z dola
+        if position == 1:
+            self.image = pygame.transform.flip(self.image, False, True)
+            self.rect.bottomleft = [x, y - int(pipe_gap / 2)]
+        if position == -1:
+            self.rect.topleft = [x, y + int(pipe_gap / 2)]
+        
+       def update(self):
+        self.rect.x -= scroll_speed
+        if self.rect.right < 0:
+            self.kill()
 
     screen.fill((0, 0, 0))  
     napisfont = pygame.font.SysFont('mvboli', 140)
@@ -553,6 +600,8 @@ def start_level3():
     pygame.display.update()
     pygame.time.delay(2000)  
 
+    
+
 
     while True:
         clock.tick(fps)
@@ -561,6 +610,7 @@ def start_level3():
         bird_group.update()
         pipe_group.draw(screen)
         screen.blit(ground_img, (ground_scroll, 768))
+       
 
         if len(pipe_group) > 0:
             if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left \
@@ -595,7 +645,6 @@ def start_level3():
 
         if game_over == True:
             if menu_button.draw() == True:
-                button.disabled = True
                 main_menu()
             if button.draw() == True:
                 start_level3()
@@ -610,13 +659,30 @@ def start_level3():
         pygame.display.update()
 
 def start_level4():
-    button.disabled = False
+    ground_img = pygame.image.load("img/elkground.png")
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     flying = True
     game_over = False
     score = reset_game()
     pipe_frequency = 1050
-    pipe_gap = 45
+    pipe_gap = 100
+    class Pipe(pygame.sprite.Sprite):
+       def __init__(self, x, y, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('img/elektro.png')
+        self.rect = self.image.get_rect()
+        
+        # pozicia 1 je z vrchu, -1  z dola
+        if position == 1:
+            self.image = pygame.transform.flip(self.image, False, True)
+            self.rect.bottomleft = [x, y - int(pipe_gap / 2)]
+        if position == -1:
+            self.rect.topleft = [x, y + int(pipe_gap / 2)]
+        
+       def update(self):
+        self.rect.x -= scroll_speed
+        if self.rect.right < 0:
+            self.kill()
 
     screen.fill((0, 0, 0))  
     napisfont = pygame.font.SysFont('mvboli', 100)
@@ -671,7 +737,6 @@ def start_level4():
   
                 main_menu()
             if button.draw() == True:
-                button.disabled = True
                 start_level4()
 
         for event in pygame.event.get():
@@ -684,13 +749,30 @@ def start_level4():
         pygame.display.update()
 
 def start_level5():
-    button.disabled = False
+    ground_img = pygame.image.load("img/groundhwp.png")
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     flying = True
     game_over = False
     score = reset_game()
     pipe_frequency = 710
-    pipe_gap = 20
+    pipe_gap = 80
+    class Pipe(pygame.sprite.Sprite):
+       def __init__(self, x, y, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('img/hardver.png')
+        self.rect = self.image.get_rect()
+        
+        # pozicia 1 je z vrchu, -1  z dola
+        if position == 1:
+            self.image = pygame.transform.flip(self.image, False, True)
+            self.rect.bottomleft = [x, y - int(pipe_gap / 2)]
+        if position == -1:
+            self.rect.topleft = [x, y + int(pipe_gap / 2)]
+        
+       def update(self):
+        self.rect.x -= scroll_speed
+        if self.rect.right < 0:
+            self.kill()
 
     screen.fill((0, 0, 0))  
     napisfont = pygame.font.SysFont('mvboli', 80)
@@ -743,7 +825,6 @@ def start_level5():
 
         if game_over == True:
             if menu_button.draw() == True:
-                button.disabled = True
                 main_menu()
             if button.draw() == True:
                 start_level5()
@@ -759,7 +840,6 @@ def start_level5():
 
 
 def endless_level():
-    button.disabled = False
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     flying = True
     game_over = False
@@ -809,10 +889,9 @@ def endless_level():
 
         if game_over == True:
             if menu_button.draw() == True:
-                button.disabled = True
                 main_menu()
             if button.draw() == True:
-                start_level1()
+                endless_level()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -879,8 +958,8 @@ def main_menu():
 
         screen.blit(bg, (0, 0))
 
-        MENU_TEXT = menu_font.render('Flappy Bird', True, '#111111')
-        screen.blit(MENU_TEXT, (screen_width // 2 - MENU_TEXT.get_width() // 2, screen_height // 6 - MENU_TEXT.get_height() // 2))
+        
+        screen.blit(logoeng, (screen_width // 2 - logoeng.get_width() // 2, screen_height // 6 - logoeng.get_height() // 2))
         endless_button_x = screen_width // 2 - endless_button.get_width() // 2
         endless_button_y = screen_height // 2 - endless_button.get_height() // 2
         screen.blit(endless_button, (endless_button_x, endless_button_y))
@@ -1032,11 +1111,10 @@ while run:
             ground_scroll = 0
         pipe_group.update()
     if game_over == True:
-        button.disabled = False
+        pygame.display.update()
         if menu_button.draw() == True:
             main_menu()
         if button.draw() == True:
-            button.disabled = True
             start_game()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
