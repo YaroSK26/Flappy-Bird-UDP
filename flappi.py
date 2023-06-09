@@ -57,6 +57,21 @@ madarcina = pygame.image.load('img/hu2.png')
 logoeng = pygame.image.load('img/logoeng.png')
 logohun = pygame.image.load('img/logohun.png')
 game_over_eng = pygame.image.load('img/Game_Over_ENG.png')
+zvuk_on = pygame.image.load('img/ano_zvuk.png')
+zvuk_off = pygame.image.load ('img/kein_zvuk.png')
+
+#HUDBA
+klik_zvuk = pygame.mixer.Sound('img/klik.wav')
+menu_music = pygame.mixer.Sound('img/menumusic.mp3')
+menu_music_hu = pygame.mixer.Sound('img/menumusichu.mp3')
+game_over_sfx = pygame.mixer.Sound('img/gameoversfx.mp3')
+
+#BLBOSI
+sound_on = True  # Variable to track the state of the sound
+
+
+
+
 #sprite class animacia postavy , images 
 class Bird(pygame.sprite.Sprite):
     def __init__(self, x,y):
@@ -155,23 +170,25 @@ menu_button = Button(screen_width // 2.33, screen_height // 1.9, menu_img)
 
 
 def hra_po_madarsky():
+    sound_on = True
+    menu_music.stop()
+    menu_music_hu.play()
     pygame.display.set_caption('Menu')
     while True:
-
-        
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 exit()
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left mouse button
-                    mouse_x, mouse_y = pygame.mouse.get_pos()
+                    mouse_x, mouse_y = pygame.mouse.get_pos()   
 
                     endless_button_x = screen_width // 2 - endless_button.get_width() // 2
                     endless_button_y = screen_height // 2 - endless_button.get_height() // 2
                     endless_button_rect = endless_button.get_rect(topleft=(endless_button_x, endless_button_y))
 
                     if endless_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
                         game_over = False
                         endless_level()
                         
@@ -190,6 +207,7 @@ def hra_po_madarsky():
                     levels_button_rect = levels_button.get_rect(topleft=(levels_button_x, levels_button_y))
 
                     if levels_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
                         levels_menu()
                       
                     anglictina_x = screen_width // 2.6 - anglictina.get_width() // 2
@@ -197,6 +215,7 @@ def hra_po_madarsky():
                     anglictina_button_rect = anglictina.get_rect(topleft=(anglictina_x, anglictina_y))
 
                     if anglictina_button_rect.collidepoint(mouse_x,mouse_y):
+                        klik_zvuk.play()
                         hra_po_anglicky()
 
                     madarcina_x = screen_width // 1.6 - madarcina.get_width() // 2
@@ -204,7 +223,21 @@ def hra_po_madarsky():
                     madarcina_button_rect = madarcina.get_rect(topleft=(madarcina_x, madarcina_y))
 
                     if madarcina_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
                         hra_po_madarsky()
+
+                    zvuk_off_x = screen_width // 18 - zvuk_off.get_width() // 2
+                    zvuk_off_y = screen_height // 1.05 - zvuk_off.get_height() // 2
+                    zvuk_off_rect = zvuk_off.get_rect(topleft=(zvuk_off_x, zvuk_off_y))
+
+                    if zvuk_off_rect.collidepoint(mouse_x, mouse_y):
+                        if sound_on:
+                            menu_music_hu.stop()
+                            sound_on = False
+                        else:
+                            menu_music_hu.play()
+                            sound_on = True
+
 
 
         screen.blit(bg, (0, 0))
@@ -229,13 +262,30 @@ def hra_po_madarsky():
         madarcina_x = screen_width // 1.6 - madarcina.get_width() // 2
         madarcina_y = screen_height // 1.1 - madarcina.get_height() // 2
         screen.blit(madarcina, (madarcina_x, madarcina_y))
+
+        zvuk_off_x = screen_width // 18 - zvuk_off.get_width() // 2
+        zvuk_off_y = screen_height // 1.05 - zvuk_off.get_height() // 2
+        screen.blit(zvuk_off, (zvuk_off_x, zvuk_off_y))
+
+        if sound_on:
+            screen.blit(zvuk_off, (zvuk_off_x, zvuk_off_y))
+        else:
+            screen.blit(zvuk_on, (zvuk_off_x, zvuk_off_y))
+
         pygame.display.update()
         clock.tick(fps)
 
 def hra_po_anglicky():
+    sound_on = True
+    menu_music_hu.stop()
+    menu_music.play()
     pygame.display.set_caption('Menu')
+
+    anglictina_x = screen_width // 2.6 - anglictina.get_width() // 2
+    anglictina_y = screen_height // 1.1 - anglictina.get_height() // 2
+    anglictina_button_rect = anglictina.get_rect(topleft=(anglictina_x, anglictina_y))
+
     while True:
-        
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -249,9 +299,10 @@ def hra_po_anglicky():
                     endless_button_rect = endless_button.get_rect(topleft=(endless_button_x, endless_button_y))
 
                     if endless_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
+                        menu_music.stop()
                         game_over = False
                         endless_level()
-                        
 
                     quit_button_x = screen_width // 2 - quit_button.get_width() // 2
                     quit_button_y = screen_height // 1.4 - quit_button.get_height() // 2
@@ -266,22 +317,28 @@ def hra_po_anglicky():
                     levels_button_rect = levels_button.get_rect(topleft=(levels_button_x, levels_button_y))
 
                     if levels_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
                         levels_menu()
-                      
-                    anglictina_x = screen_width // 2.6 - anglictina.get_width() // 2
-                    anglictina_y = screen_height // 1.1 - anglictina.get_height() // 2
-                    anglictina_button_rect = anglictina.get_rect(topleft=(anglictina_x, anglictina_y))
-
-                    if anglictina_button_rect.collidepoint(mouse_x,mouse_y):
-                        hra_po_anglicky()
 
                     madarcina_x = screen_width // 1.6 - madarcina.get_width() // 2
                     madarcina_y = screen_height // 1.1 - madarcina.get_height() // 2
                     madarcina_button_rect = madarcina.get_rect(topleft=(madarcina_x, madarcina_y))
 
                     if madarcina_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
                         hra_po_madarsky()
 
+                    zvuk_off_x = screen_width // 18 - zvuk_off.get_width() // 2
+                    zvuk_off_y = screen_height // 1.05 - zvuk_off.get_height() // 2
+                    zvuk_off_rect = zvuk_off.get_rect(topleft=(zvuk_off_x, zvuk_off_y))
+
+                    if zvuk_off_rect.collidepoint(mouse_x, mouse_y):
+                        if sound_on:
+                            menu_music.stop()
+                            sound_on = False
+                        else:
+                            menu_music.play()
+                            sound_on = True
 
         screen.blit(bg, (0, 0))
 
@@ -298,39 +355,21 @@ def hra_po_anglicky():
         levels_button_y = screen_height // 1.65 - levels_button.get_height() // 2
         screen.blit(levels_button, (levels_button_x, levels_button_y))
 
-        anglictina_x = screen_width // 2.6 - anglictina.get_width() // 2
-        anglictina_y = screen_height // 1.1 - anglictina.get_height() // 2
         screen.blit(anglictina, (anglictina_x, anglictina_y))
 
         madarcina_x = screen_width // 1.6 - madarcina.get_width() // 2
         madarcina_y = screen_height // 1.1 - madarcina.get_height() // 2
         screen.blit(madarcina, (madarcina_x, madarcina_y))
-        pygame.display.update()
-        clock.tick(fps)
 
+        zvuk_off_x = screen_width // 18 - zvuk_off.get_width() // 2
+        zvuk_off_y = screen_height // 1.05 - zvuk_off.get_height() // 2
+        screen.blit(zvuk_off, (zvuk_off_x, zvuk_off_y))
 
-        screen.blit(bg, (0, 0))
+        if sound_on:
+            screen.blit(zvuk_off, (zvuk_off_x, zvuk_off_y))
+        else:
+            screen.blit(zvuk_on, (zvuk_off_x, zvuk_off_y))
 
-        screen.blit(logoeng, (screen_width // 2 - logoeng.get_width() // 2, screen_height // 5 - logoeng.get_height() // 2))
-        endless_button_x = screen_width // 2 - endless_button.get_width() // 2
-        endless_button_y = screen_height // 2 - endless_button.get_height() // 2
-        screen.blit(endless_button, (endless_button_x, endless_button_y))
-
-        quit_button_x = screen_width // 2 - quit_button.get_width() // 2
-        quit_button_y = screen_height // 1.4 - quit_button.get_height() // 2
-        screen.blit(quit_button, (quit_button_x, quit_button_y))
-
-        levels_button_x = screen_width // 2 - levels_button.get_width() // 2
-        levels_button_y = screen_height // 1.65 - levels_button.get_height() // 2
-        screen.blit(levels_button, (levels_button_x, levels_button_y))
-
-        anglictina_x = screen_width // 2.6 - anglictina.get_width() // 2
-        anglictina_y = screen_height // 1.1 - anglictina.get_height() // 2
-        screen.blit(anglictina, (anglictina_x, anglictina_y))
-
-        madarcina_x = screen_width // 1.6 - madarcina.get_width() // 2
-        madarcina_y = screen_height // 1.1 - madarcina.get_height() // 2
-        screen.blit(madarcina, (madarcina_x, madarcina_y))
         pygame.display.update()
         clock.tick(fps)
     
@@ -389,6 +428,8 @@ def draw_text(text, font, text_col, x, y):
 
 
 def start_level1():
+    menu_music.stop()
+    menu_music_hu.stop()
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     flying = True
     game_over = False
@@ -477,6 +518,8 @@ def start_level1():
         pygame.display.update()
 
 def start_level2():
+    menu_music.stop()
+    menu_music_hu.stop()
     ground_img = pygame.image.load("img/sjlground.png")
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     flying = True
@@ -567,6 +610,8 @@ def start_level2():
         pygame.display.update()
 
 def start_level3():
+    menu_music.stop()
+    menu_music_hu.stop()
     ground_img = pygame.image.load("img/matground.png")
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     flying = True
@@ -659,6 +704,8 @@ def start_level3():
         pygame.display.update()
 
 def start_level4():
+    menu_music.stop()
+    menu_music_hu.stop()
     ground_img = pygame.image.load("img/elkground.png")
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     flying = True
@@ -749,6 +796,8 @@ def start_level4():
         pygame.display.update()
 
 def start_level5():
+    menu_music.stop()
+    menu_music_hu.stop()
     ground_img = pygame.image.load("img/groundhwp.png")
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     flying = True
@@ -811,7 +860,7 @@ def start_level5():
         if game_over == False and flying == True:
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 2, pipe_gap // 2)
+                pipe_height = random.randint(-pipe_gap // 2.7, pipe_gap // 4)
                 btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
                 top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
                 pipe_group.add(btm_pipe)
@@ -840,14 +889,14 @@ def start_level5():
 
 
 def endless_level():
+    menu_music_hu.stop()
+    menu_music.stop()
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     flying = True
     game_over = False
     score = reset_game()
     pipe_frequency = 2400
     pipe_gap = 170
-
-
     while True:
         clock.tick(fps)
         screen.blit(bg, (0, 0))
@@ -868,8 +917,10 @@ def endless_level():
 
         draw_text(str(score), font, white, int(screen_width / 2.1), 20)
         if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top < 0:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
             game_over = True
         if flappy.rect.bottom >= 768:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
             game_over = True
             flying = False
 
@@ -900,6 +951,7 @@ def endless_level():
             if event.type == pygame.MOUSEBUTTONDOWN and flying == False and game_over == False:
                 flying = True
 
+            
         pygame.display.update()
 
 
@@ -908,7 +960,8 @@ def endless_level():
 def main_menu():
     pygame.display.set_caption('Menu')
     while True:
-        
+        menu_music.play()
+
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -922,6 +975,8 @@ def main_menu():
                     endless_button_rect = endless_button.get_rect(topleft=(endless_button_x, endless_button_y))
 
                     if endless_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
+                        menu_music.stop()
                         game_over = False
                         endless_level()
                         
@@ -937,8 +992,8 @@ def main_menu():
                     levels_button_x = screen_width // 2 - levels_button.get_width() // 2
                     levels_button_y = screen_height // 1.65 - levels_button.get_height() // 2
                     levels_button_rect = levels_button.get_rect(topleft=(levels_button_x, levels_button_y))
-
                     if levels_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
                         levels_menu()
                       
                     anglictina_x = screen_width // 2.6 - anglictina.get_width() // 2
@@ -946,6 +1001,7 @@ def main_menu():
                     anglictina_button_rect = anglictina.get_rect(topleft=(anglictina_x, anglictina_y))
 
                     if anglictina_button_rect.collidepoint(mouse_x,mouse_y):
+                        klik_zvuk.play()
                         hra_po_anglicky()
 
                     madarcina_x = screen_width // 1.6 - madarcina.get_width() // 2
@@ -953,6 +1009,7 @@ def main_menu():
                     madarcina_button_rect = madarcina.get_rect(topleft=(madarcina_x, madarcina_y))
 
                     if madarcina_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
                         hra_po_madarsky()
 
 
@@ -982,6 +1039,8 @@ def main_menu():
         pygame.display.update()
         clock.tick(fps)
 
+        
+
 
 
 def levels_menu():
@@ -998,6 +1057,7 @@ def levels_menu():
 
                     if menu_button_x < mouse_x < menu_button_x + menu_img.get_width() and \
                             menu_button_y < mouse_y < menu_button_y + menu_img.get_height():
+                        klik_zvuk.play()
                         return  # Exit the levels_menu() function and return to the main_menu()
 
                     level1_button_x = screen_width // 4.55 - level1.get_width() // 2
@@ -1005,6 +1065,7 @@ def levels_menu():
                     level1_button_rect = level1.get_rect(topleft=(level1_button_x, level1_button_y))
 
                     if level1_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
                         start_level1()
 
                     level2_button_x = level1_button_x + level1.get_width() + (screen_width // 10 - level2.get_width() // 2)
@@ -1012,6 +1073,7 @@ def levels_menu():
                     level2_button_rect = level2.get_rect(topleft=(level2_button_x, level2_button_y))
 
                     if level2_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
                         start_level2()
 
                     level3_button_x = level2_button_x + level3.get_width() + (screen_width // 10 - level3.get_width() // 2)
@@ -1019,6 +1081,7 @@ def levels_menu():
                     level3_button_rect = level3.get_rect(topleft=(level3_button_x, level3_button_y))
 
                     if level3_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
                         start_level3()
 
                     level4_button_x = level3_button_x + level3.get_width() + (screen_width // 10 - level4.get_width() // 2)
@@ -1026,6 +1089,7 @@ def levels_menu():
                     level4_button_rect = level4.get_rect(topleft=(level4_button_x, level4_button_y))
 
                     if level4_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
                         start_level4()
 
                     level5_button_x = level4_button_x + level4.get_width() + (screen_width // 10 - level5.get_width() // 2)
@@ -1033,6 +1097,7 @@ def levels_menu():
                     level5_button_rect = level5.get_rect(topleft=(level5_button_x, level5_button_y))
 
                     if level5_button_rect.collidepoint(mouse_x, mouse_y):
+                        klik_zvuk.play()
                         start_level5()
 
 
@@ -1110,12 +1175,14 @@ while run:
         if abs(ground_scroll) > 35:
             ground_scroll = 0
         pipe_group.update()
-    if game_over == True:
-        pygame.display.update()
-        if menu_button.draw() == True:
-            main_menu()
-        if button.draw() == True:
-            start_game()
+    if game_over:
+       pygame.display.update()
+    if menu_button.draw():
+        klik_zvuk.play()
+        main_menu()
+    if button.draw():
+        klik_zvuk.play()
+        start_game()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
