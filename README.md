@@ -4,3 +4,5 @@ hardware trupki
 po resete to neda do endless ale do posledne hraneho levelu
 nesu pozadia
 asi setko
+
+zabijeme brana&

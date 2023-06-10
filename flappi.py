@@ -65,7 +65,7 @@ klik_zvuk = pygame.mixer.Sound('img/klik.wav')
 menu_music = pygame.mixer.Sound('img/menumusic.mp3')
 menu_music_hu = pygame.mixer.Sound('img/menumusichu.mp3')
 game_over_sfx = pygame.mixer.Sound('img/gameoversfx.mp3')
-
+menu_music_hu.set_volume(0.4)
 #BLBOSI
 sound_on = True  # Variable to track the state of the sound
 
@@ -171,6 +171,7 @@ menu_button = Button(screen_width // 2.33, screen_height // 1.9, menu_img)
 
 def hra_po_madarsky():
     sound_on = True
+    menu_music_hu.stop()
     menu_music.stop()
     menu_music_hu.play()
     pygame.display.set_caption('Menu')
@@ -218,13 +219,7 @@ def hra_po_madarsky():
                         klik_zvuk.play()
                         hra_po_anglicky()
 
-                    madarcina_x = screen_width // 1.6 - madarcina.get_width() // 2
-                    madarcina_y = screen_height // 1.1 - madarcina.get_height() // 2
-                    madarcina_button_rect = madarcina.get_rect(topleft=(madarcina_x, madarcina_y))
-
-                    if madarcina_button_rect.collidepoint(mouse_x, mouse_y):
-                        klik_zvuk.play()
-                        hra_po_madarsky()
+                    
 
                     zvuk_off_x = screen_width // 18 - zvuk_off.get_width() // 2
                     zvuk_off_y = screen_height // 1.05 - zvuk_off.get_height() // 2
@@ -434,8 +429,8 @@ def start_level1():
     flying = True
     game_over = False
     score = reset_game()
-    pipe_frequency = 2400
-    pipe_gap = 170
+    pipe_frequency = 2000
+    pipe_gap = 150
 
     class Pipe(pygame.sprite.Sprite):
        def __init__(self, x, y, position):
@@ -483,15 +478,17 @@ def start_level1():
 
         draw_text(str(score), font, white, int(screen_width / 2.1), 20)
         if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top < 0:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
             game_over = True
         if flappy.rect.bottom >= 768:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
             game_over = True
             flying = False
 
         if game_over == False and flying == True:
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 2, pipe_gap // 2)
+                pipe_height = random.randint(-pipe_gap // 0.5, pipe_gap // 2)
                 btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
                 top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
                 pipe_group.add(btm_pipe)
@@ -525,8 +522,8 @@ def start_level2():
     flying = True
     game_over = False
     score = reset_game()
-    pipe_frequency = 1700
-    pipe_gap = 140
+    pipe_frequency = 1400
+    pipe_gap = 120
     class Pipe(pygame.sprite.Sprite):
        def __init__(self, x, y, position):
         pygame.sprite.Sprite.__init__(self)
@@ -575,15 +572,17 @@ def start_level2():
 
         draw_text(str(score), font, white, int(screen_width / 2.1), 20)
         if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top < 0:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
             game_over = True
         if flappy.rect.bottom >= 768:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
             game_over = True
             flying = False
 
         if game_over == False and flying == True:
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 2, pipe_gap // 2)
+                pipe_height = random.randint(-pipe_gap // 0.4, pipe_gap // 2)
                 btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
                 top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
                 pipe_group.add(btm_pipe)
@@ -617,8 +616,8 @@ def start_level3():
     flying = True
     game_over = False
     score = reset_game()
-    pipe_frequency = 1400
-    pipe_gap = 120
+    pipe_frequency = 1250
+    pipe_gap = 105
     class Pipe(pygame.sprite.Sprite):
        def __init__(self, x, y, position):
         pygame.sprite.Sprite.__init__(self)
@@ -669,15 +668,17 @@ def start_level3():
 
         draw_text(str(score), font, white, int(screen_width / 2.1), 20)
         if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top < 0:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
             game_over = True
         if flappy.rect.bottom >= 768:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
             game_over = True
             flying = False
 
         if game_over == False and flying == True:
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 2, pipe_gap // 2)
+                pipe_height = random.randint(-pipe_gap // 0.5, pipe_gap // 2)
                 btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
                 top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
                 pipe_group.add(btm_pipe)
@@ -760,15 +761,16 @@ def start_level4():
 
         draw_text(str(score), font, white, int(screen_width / 2.1), 20)
         if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top < 0:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
             game_over = True
         if flappy.rect.bottom >= 768:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
             game_over = True
             flying = False
-
         if game_over == False and flying == True:
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 2, pipe_gap // 2)
+                pipe_height = random.randint(-pipe_gap // 0.4, pipe_gap // 2)
                 btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
                 top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
                 pipe_group.add(btm_pipe)
@@ -803,7 +805,7 @@ def start_level5():
     flying = True
     game_over = False
     score = reset_game()
-    pipe_frequency = 710
+    pipe_frequency = 750
     pipe_gap = 80
     class Pipe(pygame.sprite.Sprite):
        def __init__(self, x, y, position):
@@ -852,15 +854,19 @@ def start_level5():
 
         draw_text(str(score), font, white, int(screen_width / 2.1), 20)
         if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top < 0:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
             game_over = True
         if flappy.rect.bottom >= 768:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
             game_over = True
             flying = False
+
+
 
         if game_over == False and flying == True:
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 2.7, pipe_gap // 4)
+                pipe_height = random.randint(-pipe_gap // 0.6, pipe_gap // 4)
                 btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
                 top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
                 pipe_group.add(btm_pipe)
@@ -895,8 +901,8 @@ def endless_level():
     flying = True
     game_over = False
     score = reset_game()
-    pipe_frequency = 2400
-    pipe_gap = 170
+    pipe_frequency = 1100
+    pipe_gap = 40
     while True:
         clock.tick(fps)
         screen.blit(bg, (0, 0))
@@ -927,7 +933,7 @@ def endless_level():
         if game_over == False and flying == True:
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 2, pipe_gap // 2)
+                pipe_height = random.randint(-pipe_gap // 0.5, pipe_gap // 1)
                 btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
                 top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
                 pipe_group.add(btm_pipe)
@@ -958,10 +964,16 @@ def endless_level():
 
 
 def main_menu():
+    sound_on = True
+    menu_music_hu.stop()
+    menu_music.play()
     pygame.display.set_caption('Menu')
-    while True:
-        menu_music.play()
 
+    anglictina_x = screen_width // 2.6 - anglictina.get_width() // 2
+    anglictina_y = screen_height // 1.1 - anglictina.get_height() // 2
+    anglictina_button_rect = anglictina.get_rect(topleft=(anglictina_x, anglictina_y))
+
+    while True:
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -979,7 +991,6 @@ def main_menu():
                         menu_music.stop()
                         game_over = False
                         endless_level()
-                        
 
                     quit_button_x = screen_width // 2 - quit_button.get_width() // 2
                     quit_button_y = screen_height // 1.4 - quit_button.get_height() // 2
@@ -992,17 +1003,10 @@ def main_menu():
                     levels_button_x = screen_width // 2 - levels_button.get_width() // 2
                     levels_button_y = screen_height // 1.65 - levels_button.get_height() // 2
                     levels_button_rect = levels_button.get_rect(topleft=(levels_button_x, levels_button_y))
+
                     if levels_button_rect.collidepoint(mouse_x, mouse_y):
                         klik_zvuk.play()
                         levels_menu()
-                      
-                    anglictina_x = screen_width // 2.6 - anglictina.get_width() // 2
-                    anglictina_y = screen_height // 1.1 - anglictina.get_height() // 2
-                    anglictina_button_rect = anglictina.get_rect(topleft=(anglictina_x, anglictina_y))
-
-                    if anglictina_button_rect.collidepoint(mouse_x,mouse_y):
-                        klik_zvuk.play()
-                        hra_po_anglicky()
 
                     madarcina_x = screen_width // 1.6 - madarcina.get_width() // 2
                     madarcina_y = screen_height // 1.1 - madarcina.get_height() // 2
@@ -1012,11 +1016,21 @@ def main_menu():
                         klik_zvuk.play()
                         hra_po_madarsky()
 
+                    zvuk_off_x = screen_width // 18 - zvuk_off.get_width() // 2
+                    zvuk_off_y = screen_height // 1.05 - zvuk_off.get_height() // 2
+                    zvuk_off_rect = zvuk_off.get_rect(topleft=(zvuk_off_x, zvuk_off_y))
+
+                    if zvuk_off_rect.collidepoint(mouse_x, mouse_y):
+                        if sound_on:
+                            menu_music.stop()
+                            sound_on = False
+                        else:
+                            menu_music.play()
+                            sound_on = True
 
         screen.blit(bg, (0, 0))
 
-        
-        screen.blit(logoeng, (screen_width // 2 - logoeng.get_width() // 2, screen_height // 6 - logoeng.get_height() // 2))
+        screen.blit(logoeng, (screen_width // 2 - logoeng.get_width() // 2, screen_height // 5 - logoeng.get_height() // 2))
         endless_button_x = screen_width // 2 - endless_button.get_width() // 2
         endless_button_y = screen_height // 2 - endless_button.get_height() // 2
         screen.blit(endless_button, (endless_button_x, endless_button_y))
@@ -1029,13 +1043,21 @@ def main_menu():
         levels_button_y = screen_height // 1.65 - levels_button.get_height() // 2
         screen.blit(levels_button, (levels_button_x, levels_button_y))
 
-        anglictina_x = screen_width // 2.6 - anglictina.get_width() // 2
-        anglictina_y = screen_height // 1.1 - anglictina.get_height() // 2
         screen.blit(anglictina, (anglictina_x, anglictina_y))
 
         madarcina_x = screen_width // 1.6 - madarcina.get_width() // 2
         madarcina_y = screen_height // 1.1 - madarcina.get_height() // 2
         screen.blit(madarcina, (madarcina_x, madarcina_y))
+
+        zvuk_off_x = screen_width // 18 - zvuk_off.get_width() // 2
+        zvuk_off_y = screen_height // 1.05 - zvuk_off.get_height() // 2
+        screen.blit(zvuk_off, (zvuk_off_x, zvuk_off_y))
+
+        if sound_on:
+            screen.blit(zvuk_off, (zvuk_off_x, zvuk_off_y))
+        else:
+            screen.blit(zvuk_on, (zvuk_off_x, zvuk_off_y))
+
         pygame.display.update()
         clock.tick(fps)
 
