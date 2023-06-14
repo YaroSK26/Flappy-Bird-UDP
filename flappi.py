@@ -59,17 +59,19 @@ logohun = pygame.image.load('img/logohun.png')
 game_over_eng = pygame.image.load('img/Game_Over_ENG.png')
 zvuk_on = pygame.image.load('img/ano_zvuk.png')
 zvuk_off = pygame.image.load ('img/kein_zvuk.png')
+levels_eng = pygame.image.load("img/levels_ENG.png")
+
 
 #HUDBA
 klik_zvuk = pygame.mixer.Sound('img/klik.wav')
 menu_music = pygame.mixer.Sound('img/menumusic.mp3')
 menu_music_hu = pygame.mixer.Sound('img/menumusichu.mp3')
 game_over_sfx = pygame.mixer.Sound('img/gameoversfx.mp3')
-menu_music_hu.set_volume(0.4)
+menu_music_hu.set_volume(0.3)
+intro_music = pygame.mixer.Sound('img/intromusic.mp3')
+intro_music.set_volume(0.3)
 #BLBOSI
 sound_on = True  # Variable to track the state of the sound
-
-
 
 
 #sprite class animacia postavy , images 
@@ -77,6 +79,13 @@ class Bird(pygame.sprite.Sprite):
     def __init__(self, x,y):
         pygame.sprite.Sprite.__init__(self)
         self.images = []
+        super().__init__()
+        self.image = pygame.Surface((40, 40))  # Replace with your bird image
+        self.image.fill((255, 255, 255))  # Replace with your bird color
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.is_powered_up = False  # Flag to track if the bird is powered up
+        self.powered_up_duration = 5000  # Power-up duration in milliseconds
         #meni obrazky
         self.index =  0 
         #meni rychlost menenia obrazkov
@@ -90,8 +99,14 @@ class Bird(pygame.sprite.Sprite):
         self.rect.center = [x,y]
         self.vel = 0
         self.clicked = False
+        self.speed = 5
 
     def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            self.rect.y -= self.speed
+        elif keys[pygame.K_DOWN]:
+            self.rect.y += self.speed
         #nastavovanie gravity
         if flying == True:
             self.vel += 0.5
@@ -99,6 +114,14 @@ class Bird(pygame.sprite.Sprite):
                 self.vel = 8
             if self.rect.bottom < 768:
                 self.rect.y += int(self.vel)
+
+        if self.is_powered_up:
+            self.image = pygame.transform.scale(self.image, (20, 20))  # Reduce the bird size
+            self.powered_up_duration -= clock.get_rawtime()  # Decrease the power-up duration
+
+            if self.powered_up_duration <= 0:
+                self.is_powered_up = False
+                self.image = pygame.transform.scale(self.image, (40, 40))  # Restore the original bird size
 
 
 
@@ -129,6 +152,11 @@ class Bird(pygame.sprite.Sprite):
             self.image = pygame.transform.rotate(self.images[self.index], self.vel * -1)
         else:
              self.image = pygame.transform.rotate(self.images[self.index],-90)
+
+
+
+
+
 
 class Button():
     def __init__(self, x, y, image):
@@ -168,11 +196,121 @@ bird_group.add(flappy)
 button = Button(screen_width // 2.33, screen_height // 2.3, reset_button_img)
 menu_button = Button(screen_width // 2.33, screen_height // 1.9, menu_img)
 
+def start_game():
+    screen.blit(bg, (0, 0))
+    global flying, game_over, score
+    flying = True
+    game_over = False
+    score = reset_game()
+
+    pygame.display.set_caption('Menu')
+
+def reset_game():
+    pipe_group.empty()
+    flappy.rect.x = 100
+    flappy.rect.y = int(screen_height / 2)
+    score = 0
+    return score
+    
+
+def draw_text(text, font, text_col, x, y):
+    img = font.render(text, True, text_col)
+    screen.blit(img, (x, y))
+
+
+def endless_level():
+    menu_music_hu.stop()
+    menu_music.stop()
+    intro_music.stop()
+    global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
+    flying = True
+    game_over = False
+    score = reset_game()
+    pipe_frequency = 1100
+    pipe_gap = 40
+    while True:
+        clock.tick(fps)
+        screen.blit(bg, (0, 0))
+        bird_group.draw(screen)
+        bird_group.update()
+        pipe_group.draw(screen)
+        screen.blit(ground_img, (ground_scroll, 768))
+
+        if len(pipe_group) > 0:
+            if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left \
+                    and bird_group.sprites()[0].rect.right < pipe_group.sprites()[0].rect.right \
+                    and pass_pipe == False:
+                pass_pipe = True
+            if pass_pipe == True:
+                if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.right:
+                    score += 1
+                    pass_pipe = False
+
+        draw_text(str(score), font, white, int(screen_width / 2.1), 20)
+        if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top < 0:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
+            game_over = True
+        if flappy.rect.bottom >= 768:
+            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
+            game_over = True
+            flying = False
+
+        if game_over == False and flying == True:
+            time_now = pygame.time.get_ticks()
+            if time_now - last_pipe > pipe_frequency:
+                pipe_height = random.randint(-pipe_gap // 0.5, pipe_gap // 1)
+                btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
+                top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
+                pipe_group.add(btm_pipe)
+                pipe_group.add(top_pipe)
+                last_pipe = time_now
+            ground_scroll -= scroll_speed
+            if abs(ground_scroll) > 35:
+                ground_scroll = 0
+            pipe_group.update()
+
+        if game_over == True:
+            if menu_button.draw() == True:
+                main_menu()
+            if button.draw() == True:
+                endless_level()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN and flying == False and game_over == False:
+                flying = True
+
+            
+        pygame.display.update()
+
+#definovanie pipy
+class Pipe(pygame.sprite.Sprite):
+    def __init__(self, x, y, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('img/etika.png')
+        self.rect = self.image.get_rect()
+        
+        # pozicia 1 je z vrchu, -1  z dola
+        if position == 1:
+            self.image = pygame.transform.flip(self.image, False, True)
+            self.rect.bottomleft = [x, y - int(pipe_gap / 2)]
+        if position == -1:
+            self.rect.topleft = [x, y + int(pipe_gap / 2)]
+        
+    def update(self):
+        self.rect.x -= scroll_speed
+        if self.rect.right < 0:
+            self.kill()
+
+
 
 def hra_po_madarsky():
     sound_on = True
     menu_music_hu.stop()
     menu_music.stop()
+    intro_music.stop()
     menu_music_hu.play()
     pygame.display.set_caption('Menu')
     while True:
@@ -270,7 +408,11 @@ def hra_po_madarsky():
         pygame.display.update()
         clock.tick(fps)
 
+
+
+
 def hra_po_anglicky():
+    intro_music.stop()
     sound_on = True
     menu_music_hu.stop()
     menu_music.play()
@@ -369,51 +511,12 @@ def hra_po_anglicky():
         clock.tick(fps)
     
 
-#definovanie pipy
-class Pipe(pygame.sprite.Sprite):
-    def __init__(self, x, y, position):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('img/etika.png')
-        self.rect = self.image.get_rect()
-        
-        # pozicia 1 je z vrchu, -1  z dola
-        if position == 1:
-            self.image = pygame.transform.flip(self.image, False, True)
-            self.rect.bottomleft = [x, y - int(pipe_gap / 2)]
-        if position == -1:
-            self.rect.topleft = [x, y + int(pipe_gap / 2)]
-        
-    def update(self):
-        self.rect.x -= scroll_speed
-        if self.rect.right < 0:
-            self.kill()
+
 
 #chleba
 
 
-def start_game():
-    screen.blit(bg, (0, 0))
-    global flying, game_over, score
-    flying = True
-    game_over = False
-    score = reset_game()
 
-    pygame.display.set_caption('Menu')
-
-def reset_game():
-    pipe_group.empty()
-    flappy.rect.x = 100
-    flappy.rect.y = int(screen_height / 2)
-    score = 0
-    return score
-    
-
-
-
-
-def draw_text(text, font, text_col, x, y):
-    img = font.render(text, True, text_col)
-    screen.blit(img, (x, y))
     
     
 
@@ -894,74 +997,6 @@ def start_level5():
         pygame.display.update()
 
 
-def endless_level():
-    menu_music_hu.stop()
-    menu_music.stop()
-    global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
-    flying = True
-    game_over = False
-    score = reset_game()
-    pipe_frequency = 1100
-    pipe_gap = 40
-    while True:
-        clock.tick(fps)
-        screen.blit(bg, (0, 0))
-        bird_group.draw(screen)
-        bird_group.update()
-        pipe_group.draw(screen)
-        screen.blit(ground_img, (ground_scroll, 768))
-
-        if len(pipe_group) > 0:
-            if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left \
-                    and bird_group.sprites()[0].rect.right < pipe_group.sprites()[0].rect.right \
-                    and pass_pipe == False:
-                pass_pipe = True
-            if pass_pipe == True:
-                if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.right:
-                    score += 1
-                    pass_pipe = False
-
-        draw_text(str(score), font, white, int(screen_width / 2.1), 20)
-        if pygame.sprite.groupcollide(bird_group, pipe_group, False, False) or flappy.rect.top < 0:
-            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
-            game_over = True
-        if flappy.rect.bottom >= 768:
-            screen.blit(game_over_eng, (screen_width // 2 - game_over_eng.get_width() // 2, screen_height // 6 - game_over_eng.get_height() // 2))
-            game_over = True
-            flying = False
-
-        if game_over == False and flying == True:
-            time_now = pygame.time.get_ticks()
-            if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 0.5, pipe_gap // 1)
-                btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
-                top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
-                pipe_group.add(btm_pipe)
-                pipe_group.add(top_pipe)
-                last_pipe = time_now
-            ground_scroll -= scroll_speed
-            if abs(ground_scroll) > 35:
-                ground_scroll = 0
-            pipe_group.update()
-
-        if game_over == True:
-            if menu_button.draw() == True:
-                main_menu()
-            if button.draw() == True:
-                endless_level()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            if event.type == pygame.MOUSEBUTTONDOWN and flying == False and game_over == False:
-                flying = True
-
-            
-        pygame.display.update()
-
-
-
 
 def main_menu():
     sound_on = True
@@ -1125,7 +1160,7 @@ def levels_menu():
 
 
         screen.blit(bg, (0, 0))
-        draw_text("Levels", font, (0, 0, 0), screen_width // 2.5, screen_height // 8)
+        screen.blit(levels_eng, (screen_width // 1.8 - logoeng.get_width() // 2, screen_height // 5 - logoeng.get_height() // 2))
         menu_button_x = screen_width // 2 - menu_img.get_width() // 2
         menu_button_y = screen_height // 1.4 - menu_img.get_height() // 2
         screen.blit(menu_img, (menu_button_x, menu_button_y))
@@ -1152,6 +1187,67 @@ def levels_menu():
         pygame.display.update()
         clock.tick(fps)
 
+
+# Power-up class
+class PowerUp(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load('img/brano.png')
+        self.rect = self.image.get_rect()
+        self.rect.center = (screen_width + 100, random.randint(100, screen_height - 100))
+
+    def update(self):
+        self.rect.x -= 5  # Adjust the power-up movement speed
+
+# Create bird and power-up sprite groups
+all_sprites = pygame.sprite.Group()
+bird = Bird(screen_width // 2, screen_height // 2)
+all_sprites.add(bird)
+power_ups = pygame.sprite.Group()
+intro_music.play()
+# Game loop
+running = True
+while running:
+    # Event handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                hra_po_anglicky()  # Call the hra_po_anglicky() function when spacebar is pressed
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # Update
+    all_sprites.update()
+
+    # Check for collision between bird and power-up
+    power_up_collisions = pygame.sprite.spritecollide(bird, power_ups, True)
+    if power_up_collisions:
+        bird.is_powered_up = True
+        bird.powered_up_duration = 5000  # Reset the power-up duration
+
+    # Generate power-up
+    if random.random() < 0.01:
+        power_up = PowerUp()
+        power_ups.add(power_up)
+        all_sprites.add(power_up)
+
+    # Draw
+    screen.fill((0, 0, 0))
+    all_sprites.draw(screen)
+    # Add text
+    font5 = pygame.font.Font(None, 36)  # Choose the font and size
+    text1 = font5.render("Vitajte v hre Flappy Bird. Prajeme prijemnu zabavu. ", True, (255, 255, 255))  # Text, anti-aliasing, and color
+    text2 = font5.render("Pre zacatie hry stlacte SPACE ", True, (255, 255, 255))  # Text, anti-aliasing, and color
+    text1_rect = text2.get_rect(center=(screen_width // 2.8, screen_height // 5))  # Center the text
+    text2_rect = text2.get_rect(center=(screen_width // 2, screen_height // 4))  # Center the text
+    screen.blit(text1, text1_rect)
+    screen.blit(text2, text2_rect)
+    # Update the display
+    pygame.display.flip()
+    clock.tick(60)
 
 hra_po_anglicky()
 
