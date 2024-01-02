@@ -1,6 +1,9 @@
+
 #importovanie kniznic
 import pygame
 from pygame.locals import *
+import pygame
+from pygame.sprite import Group
 import random
 
 #pajgejm
@@ -187,8 +190,8 @@ class Button():
         return action
 
 #nastavenie kde bude flappy zacinat a kde budu pipy
-bird_group = pygame.sprite.Group()
-pipe_group = pygame.sprite.Group()
+bird_group: Group = pygame.sprite.Group()
+pipe_group: Group = pygame.sprite.Group()
 flappy = Bird(100, int(screen_height / 2))
 bird_group.add(flappy)
 
@@ -217,17 +220,36 @@ def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))
 
-
 def endless_level():
-    menu_music_hu.stop()
     menu_music.stop()
-    intro_music.stop()
+    menu_music_hu.stop()
     global flying, game_over, score, ground_scroll, last_pipe, pass_pipe
     flying = True
     game_over = False
     score = reset_game()
-    pipe_frequency = 1100
-    pipe_gap = 40
+    pipe_frequency = 2000
+    pipe_gap = 150
+
+    class Pipe(pygame.sprite.Sprite):
+       def __init__(self, x, y, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('img/etika.png')
+        self.rect = self.image.get_rect()
+        
+        # pozicia 1 je z vrchu, -1  z dola
+        if position == 1:
+            self.image = pygame.transform.flip(self.image, False, True)
+            self.rect.bottomleft = [x, y - int(pipe_gap / 2)]
+        if position == -1:
+            self.rect.topleft = [x, y + int(pipe_gap / 2)]
+        
+       def update(self):
+        self.rect.x -= scroll_speed
+        if self.rect.right < 0:
+            self.kill()
+
+
+
     while True:
         clock.tick(fps)
         screen.blit(bg, (0, 0))
@@ -258,7 +280,7 @@ def endless_level():
         if game_over == False and flying == True:
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 0.5, pipe_gap // 1)
+                pipe_height = random.randint(-pipe_gap // 2, pipe_gap // 2)
                 btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
                 top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
                 pipe_group.add(btm_pipe)
@@ -282,8 +304,9 @@ def endless_level():
             if event.type == pygame.MOUSEBUTTONDOWN and flying == False and game_over == False:
                 flying = True
 
-            
         pygame.display.update()
+
+
 
 #definovanie pipy
 class Pipe(pygame.sprite.Sprite):
@@ -591,7 +614,7 @@ def start_level1():
         if game_over == False and flying == True:
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 0.5, pipe_gap // 2)
+                pipe_height = random.randint(-pipe_gap // 2, pipe_gap // 2)
                 btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
                 top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
                 pipe_group.add(btm_pipe)
@@ -685,7 +708,7 @@ def start_level2():
         if game_over == False and flying == True:
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 0.4, pipe_gap // 2)
+                pipe_height = random.randint(-pipe_gap // 2, pipe_gap // 2)
                 btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
                 top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
                 pipe_group.add(btm_pipe)
@@ -781,7 +804,7 @@ def start_level3():
         if game_over == False and flying == True:
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 0.5, pipe_gap // 2)
+                pipe_height = random.randint(-pipe_gap // 2, pipe_gap // 2)
                 btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
                 top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
                 pipe_group.add(btm_pipe)
@@ -873,7 +896,7 @@ def start_level4():
         if game_over == False and flying == True:
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 0.4, pipe_gap // 2)
+                pipe_height = random.randint(-pipe_gap // 2, pipe_gap // 2)
                 btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
                 top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
                 pipe_group.add(btm_pipe)
@@ -969,7 +992,7 @@ def start_level5():
         if game_over == False and flying == True:
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frequency:
-                pipe_height = random.randint(-pipe_gap // 0.6, pipe_gap // 4)
+                pipe_height = random.randint(-pipe_gap // 2, pipe_gap // 2)
                 btm_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height + pipe_gap // 2, -1)
                 top_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height - pipe_gap // 2, 1)
                 pipe_group.add(btm_pipe)
@@ -1200,10 +1223,10 @@ class PowerUp(pygame.sprite.Sprite):
         self.rect.x -= 5  # Adjust the power-up movement speed
 
 # Create bird and power-up sprite groups
-all_sprites = pygame.sprite.Group()
+all_sprites: Group = pygame.sprite.Group()
 bird = Bird(screen_width // 2, screen_height // 2)
 all_sprites.add(bird)
-power_ups = pygame.sprite.Group()
+power_ups: Group = pygame.sprite.Group()
 intro_music.play()
 # Game loop
 running = True
@@ -1308,3 +1331,4 @@ while run:
             flying = True
     pygame.display.update()
 pygame.quit()
+
